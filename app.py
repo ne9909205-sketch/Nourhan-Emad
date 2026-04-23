@@ -3,73 +3,53 @@ import pandas as pd
 import joblib
 import numpy as np
 
-# 1. إعدادات الصفحة والشكل العام
-st.set_page_config(page_title="Diabetes AI System", page_icon="🔬", layout="wide")
+# 1. إعدادات الصفحة والهيدر باسمك
+st.set_page_config(page_title="Diabetes AI System | Eng. Nourhan", page_icon="🔬", layout="wide")
 
-# 2. تصميم الواجهة الأمامية (Header)
 st.markdown("""
-    <div style="background-color:#004d4d;padding:20px;border-radius:10px">
-    <h1 style="color:white;text-align:center;">Diabetes Risk Prediction System</h1>
-    <h3 style="color:#e0f2f1;text-align:center;">Project by: Eng. Nourhan Emad El-Din Mohamed</h3>
+    <div style="background-color:#004d4d;padding:25px;border-radius:15px;border: 2px solid #e0f2f1;margin-bottom:20px">
+    <h1 style="color:white;text-align:center;font-family:Arial;">Diabetes Risk Prediction System</h1>
+    <h3 style="color:#e0f2f1;text-align:center;">Developed by: Eng. Nourhan Emad El-Din Mohamed</h3>
+    <p style="color:#b2dfdb;text-align:center;">Graduation Project - Machine Learning Edition</p>
     </div>
     """, unsafe_allow_html=True)
 
-st.write("") # مسافة
+# 2. تحميل الموديل وملف التشفير
+@st.cache_resource
+def load_models():
+    try:
+        model = joblib.load('diabetes_model.pkl')
+        return model
+    except Exception as e:
+        st.error(f"Error loading model: {e}")
+        return None
 
-# 3. تحميل الموديل المحفوظ
-try:
-    model = joblib.load('diabetes_model.pkl')
-    le = joblib.load('label_encoder.pkl')
-except:
-    st.error("Model file not found! Please run the training code first.")
+model = load_models()
 
-# 4. تقسيم الصفحة لعمودين (بيانات المدخلات - والنتائج)
-col1, col2 = st.columns([2, 1])
-
-with col1:
-    st.subheader("📋 Patient Biological Data")
+# 3. واجهة المدخلات (الـ 17 عمود بناءً على الداتا بتاعتك)
+if model:
+    st.subheader("📋 Patient Clinical & Lifestyle Data")
     
-    with st.container():
-        age = st.slider('Select Age', 1, 100, 25)
-        gender = st.selectbox('Gender', ('Female', 'Male'))
-        bmi = st.number_input('Body Mass Index (BMI)', 10.0, 60.0, 22.0)
-        bp = st.number_input('Blood Pressure (mmHg)', 50, 200, 120)
-        glucose = st.number_input('Fasting Glucose Level', 50, 300, 100)
-        hba1c = st.number_input('HbA1c Level (%)', 3.0, 15.0, 5.5)
-        activity = st.selectbox('Physical Activity Level', ('Low', 'Moderate', 'High'))
-
-# 5. معالجة البيانات للتوقع
-# تحويل النصوص لأرقام يدويًا أو بالـ encoder لضمان الدقة
-gender_num = 0 if gender == 'Female' else 1
-activity_map = {'Low': 0, 'Moderate': 1, 'High': 2}
-activity_num = activity_map[activity]
-
-input_data = np.array([[age, gender_num, bmi, bp, glucose, hba1c, activity_num]])
-
-with col2:
-    st.subheader("🎯 Prediction Result")
-    st.write("Click the button below to analyze the data.")
+    # تقسيم المدخلات لـ 3 أعمدة عشان الشكل يكون "Elegant"
+    col1, col2, col3 = st.columns(3)
     
-    if st.button('Predict My Risk'):
-        prediction = model.predict(input_data)
-        result = prediction[0]
-        
-        # عرض النتيجة بألوان وتنسيق مختلف حسب الفئة
-        if result == 'High Risk':
-            st.error(f"Prediction: {result}")
-            st.warning("⚠️ Recommendation: Urgent medical check-up is advised.")
-        elif result == 'Prediabetes':
-            st.warning(f"Prediction: {result}")
-            st.info("💡 Recommendation: Improve diet and increase physical activity.")
-        else:
-            st.success(f"Prediction: {result}")
-            st.balloons()
-            st.write("🌟 Recommendation: Your markers are within healthy limits.")
+    with col1:
+        age = st.number_input('Age', 1, 120, 25)
+        gender = st.selectbox('Gender', ['Male', 'Female'])
+        bmi = st.number_input('Body Mass Index (BMI)', 10.0, 70.0, 24.0)
+        bp = st.number_input('Blood Pressure (mm/Hg)', 50, 250, 120)
+        glucose = st.number_input('Fasting Glucose (mg/dL)', 50, 400, 100)
+        insulin = st.number_input('Insulin Level (mu U/ml)', 0.0, 600.0, 80.0)
 
-# 6. تذييل الصفحة (Footer)
-st.markdown("---")
-st.markdown("""
-    <div style="text-align:center">
-    <p>© 2026 Graduation Project | <b>Eng. Nourhan Emad El-Din Mohamed</b></p>
-    </div>
-    """, unsafe_allow_html=True)
+    with col2:
+        hba1c = st.number_input('HbA1c Level', 3.0, 18.0, 5.5)
+        chol = st.number_input('Cholesterol (mg/dL)', 100, 500, 200)
+        tri = st.number_input('Triglycerides (mg/dL)', 50, 500, 150)
+        activity = st.selectbox('Physical Activity', ['Low', 'Moderate', 'High'])
+        diet = st.selectbox('Diet Quality', ['Poor', 'Average', 'Good'])
+        sleep = st.number_input('Sleep Hours', 1, 24, 7)
+
+    with col3:
+        stress = st.selectbox('Stress Level', ['Low', 'Moderate', 'High'])
+        family = st.selectbox('Family History of Diabetes', ['No', 'Yes'])
+        waist
