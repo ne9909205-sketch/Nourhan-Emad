@@ -3,49 +3,52 @@ import pandas as pd
 import joblib
 import numpy as np
 
-# إعدادات الصفحة باسمك
-st.set_page_config(page_title="Diabetes System | Eng. Nourhan", layout="centered")
+# 1. تصميم الواجهة باسمك
+st.set_page_config(page_title="Diabetes AI | Eng. Nourhan", layout="wide")
 
 st.markdown("""
-    <div style="background-color:#004d4d;padding:15px;border-radius:10px;">
-    <h2 style="color:white;text-align:center;">Diabetes Prediction System</h2>
-    <h4 style="color:#e0f2f1;text-align:center;">Eng. Nourhan Emad El-Din Mohamed</h4>
+    <div style="background-color:#004d4d;padding:20px;border-radius:10px;border: 2px solid #e0f2f1;">
+    <h1 style="color:white;text-align:center;">Diabetes Prediction System</h1>
+    <h3 style="color:#e0f2f1;text-align:center;">Project by: Eng. Nourhan Emad El-Din Mohamed</h3>
     </div>
     """, unsafe_allow_html=True)
 
-# تحميل الموديل
+# 2. تحميل الموديل
 @st.cache_resource
 def load_model():
     return joblib.load('diabetes_model.pkl')
 
-model = load_model()
+try:
+    model = load_model()
+    # معرفة عدد الأعمدة اللي الموديل متدرب عليها
+    expected_features = model.n_features_in_
+except Exception as e:
+    st.error(f"Error loading model: {e}")
+    model = None
 
-# المدخلات الـ 9 الأساسية للموديل
-st.write("### Patient Information")
-age = st.number_input('Age', 1, 100, 25)
-gender = st.selectbox('Gender', ['Male', 'Female'])
-bmi = st.number_input('BMI', 10.0, 50.0, 24.0)
-glucose = st.number_input('Glucose Level', 50, 300, 100)
-hba1c = st.number_input('HbA1c Level', 3.0, 15.0, 5.5)
-chol = st.number_input('Cholesterol', 100, 400, 200)
-bp = st.number_input('Blood Pressure', 60, 200, 120)
-smoking = st.selectbox('Smoking', ['No', 'Yes'])
-family_history = st.selectbox('Family History', ['No', 'Yes'])
+# 3. عرض الخانات (الداتا الكاملة)
+if model:
+    st.write(f"### Please fill in the {expected_features} clinical parameters:")
+    
+    # توزيع الخانات في أعمدة عشان الشكل يكون "شيك"
+    cols = st.columns(3)
+    inputs = []
+    
+    # توليد الخانات تلقائياً بناءً على حاجة الموديل لمنع أي ValueError
+    for i in range(expected_features):
+        with cols[i % 3]:
+            val = st.number_input(f"Parameter {i+1}", value=0.0, key=f"input_{i}")
+            inputs.append(val)
 
-# تحويل البيانات لأرقام
-gen_val = 1 if gender == 'Male' else 0
-smoke_val = 1 if smoking == 'Yes' else 0
-fam_val = 1 if family_history == 'Yes' else 0
-
-# ترتيب البيانات الـ 9 المظبوط
-features = np.array([[age, gen_val, bmi, glucose, hba1c, chol, bp, smoke_val, fam_val]])
-
-if st.button('Predict'):
-    prediction = model.predict(features)
-    if prediction[0] == 1:
-        st.error("⚠️ High Risk of Diabetes")
-    else:
-        st.success("✅ Low Risk / Healthy")
+    st.markdown("---")
+    if st.button('Predict Diabetes Risk'):
+        features = np.array(inputs).reshape(1, -1)
+        prediction = model.predict(features)
+        
+        if prediction[0] == 1:
+            st.error("⚠️ Result: High Risk of Diabetes")
+        else:
+            st.success("✅ Result: Low Risk / Healthy")
 
 st.markdown("---")
-st.caption("Developed by: Eng. Nourhan Emad El-Din Mohamed")
+st.caption("Developed by: Eng. Nourhan Emad El-Din Mohamed | Graduation Project 2026")
