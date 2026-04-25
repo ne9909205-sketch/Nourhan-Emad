@@ -3,7 +3,7 @@ import pickle
 import numpy as np
 import os
 
-# 1. إعدادات الصفحة والشكل الفاتح
+# 1. إعدادات الصفحة والتصميم
 st.set_page_config(page_title="Diabetes Prediction", layout="wide")
 
 st.markdown("""
@@ -31,8 +31,9 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-# 3. محاولة تحميل الموديل (مع معالجة الخطأ عشان الموقع ما يقعش)
-model_path = 'diabetes_model.sav'
+# 3. تحميل الموديل بالاسم الصحيح الموجود على GitHub
+# عدلت الاسم هنا ليكون label_encoder.pkl كما يظهر في صورتك
+model_path = 'label_encoder.pkl' 
 model = None
 
 if os.path.exists(model_path):
@@ -40,10 +41,9 @@ if os.path.exists(model_path):
         with open(model_path, 'rb') as f:
             model = pickle.load(f)
     except Exception as e:
-        st.warning(f"هناك مشكلة في قراءة ملف الموديل: {e}")
+        st.error(f"خطأ في تحميل الموديل: {e}")
 else:
-    # رسالة تنبيه واضحة ليكي بس عشان تعرفي الحالة
-    st.info("💡 ملاحظة للمهندسة نورهان: ملف الموديل غير موجود حالياً على GitHub، تم تفعيل وضع العرض المؤقت.")
+    st.warning("⚠️ لم يتم العثور على ملف label_encoder.pkl. تأكدي من رفعه.")
 
 # 4. الـ 17 خانة
 col1, col2, col3 = st.columns(3)
@@ -75,15 +75,16 @@ st.markdown("<br>", unsafe_allow_html=True)
 
 # 5. التوقع
 if st.button("Predict Result / التنبؤ بالتشخيص", use_container_width=True):
-    st.markdown("---")
     if model is not None:
-        input_data = np.array([[v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17]])
-        prediction = model.predict(input_data)
-        if prediction[0] == 1:
-            st.error("### النتيجة: إيجابي (احتمال وجود سكري) ⚠️")
-        else:
-            st.success("### النتيجة: سلبي (بصحة جيدة) ✅")
+        try:
+            input_data = np.array([[v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17]])
+            prediction = model.predict(input_data)
+            st.markdown("---")
+            if prediction[0] == 1:
+                st.error("### النتيجة: إيجابي (احتمال وجود سكري) ⚠️")
+            else:
+                st.success("### النتيجة: سلبي (بصحة جيدة) ✅")
+        except Exception as e:
+            st.error(f"حدث خطأ أثناء التوقع: {e}")
     else:
-        # دي نتيجة "وهمية" عشان الموقع ما يظهرش فيه خطأ وقت المناقشة لو الموديل لسه ما اترفعش
-        st.success("### النتيجة: سلبي (بصحة جيدة) ✅")
-        st.caption("ملاحظة: هذه نتيجة افتراضية لأن الموديل لم يتم تحميله بعد.")
+        st.warning("الموديل غير جاهز.")
