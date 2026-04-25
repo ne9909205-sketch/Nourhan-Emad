@@ -1,64 +1,55 @@
 import streamlit as st
 
-# 1. إعدادات الصفحة
-st.set_page_config(page_title="Diabetes Prediction", layout="wide")
+# إعدادات الصفحة
+st.set_page_config(page_title="Diabetes Prediction System", layout="wide")
 
-# 2. كود التنسيق الجمالي (CSS) - لتحويل الموقع للون فاتح ومريح
+# تنسيق الألوان (النمط الفاتح)
 st.markdown("""
     <style>
-    .stApp {
-        background-color: #FFFFFF;
-    }
-    .header-box {
-        background-color: #f8f9fa;
-        padding: 30px;
-        border-radius: 15px;
-        text-align: center;
-        border: 1px solid #e9ecef;
-        margin-bottom: 40px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
-    h1 { color: #2c3e50 !important; font-family: 'Trebuchet MS', sans-serif; }
-    p.eng-name { color: #7f8c8d !important; font-size: 1.2rem; }
-    .stNumberInput, .stSelectbox { margin-bottom: 20px; }
+    .stApp { background-color: #FFFFFF; }
+    .main-title { color: #2e7d32; text-align: center; font-size: 2.5rem; font-weight: bold; margin-bottom: 5px; }
+    .sub-title { color: #546e7a; text-align: center; font-size: 1.2rem; margin-bottom: 30px; }
+    .stNumberInput, .stSelectbox, .stSlider { margin-bottom: 10px; }
+    hr { margin-top: 20px; margin-bottom: 20px; }
     </style>
-    
-    <div class="header-box">
-        <h1>Diabetes Prediction System</h1>
-        <p class="eng-name">Eng. Nourhan Emad El-Din Mohamed</p>
+    <div>
+        <h1 class="main-title">Diabetes Prediction System</h1>
+        <p class="sub-title">Eng. Nourhan Emad El-Din Mohamed</p>
     </div>
+    <hr>
     """, unsafe_allow_html=True)
 
-# 3. تنظيم الخانات (Inputs) في أعمدة عشان تظهر كلها
-st.subheader("Patient Clinical Data (Full Parameters)")
-
-# هنقسم الصفحة لـ 3 أعمدة عشان الخانات تكون مريحة للعين ومترتبة
+# تقسيم الـ 17 خانة على 3 أعمدة عشان الشكل يكون مريح والعين تشوفهم كلهم
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    gender = st.selectbox("Gender", options=[0, 1], format_func=lambda x: "Male" if x == 1 else "Female")
-    hba1c = st.number_input("HbA1c", value=5.50, format="%.2f")
-    cholesterol = st.number_input("Cholesterol", value=200)
+    st.markdown("### 🧬 Demographics")
+    age = st.number_input("1. Age", value=45)
+    gender = st.selectbox("2. Gender", [0, 1], format_func=lambda x: "Male" if x==1 else "Female")
+    bmi = st.number_input("3. BMI", value=25.0)
+    waist = st.number_input("4. Waist (cm)", value=85)
+    family_hist = st.selectbox("5. Family History", [0, 1], format_func=lambda x: "Yes" if x==1 else "No")
+    ethnicity = st.selectbox("6. Ethnicity", [0, 1, 2, 3]) # عدلي الاختيارات حسب الداتا
 
 with col2:
-    smoking = st.selectbox("Smoking", options=[0, 1], format_func=lambda x: "Yes" if x == 1 else "No")
-    triglycerides = st.number_input("Triglycerides", value=150)
-    stress = st.slider("Stress Level (0-2)", 0, 2, 1)
+    st.markdown("### 📊 Clinical Labs")
+    hba1c = st.number_input("7. HbA1c Level", value=5.5)
+    blood_glucose = st.number_input("8. Blood Glucose", value=100)
+    cholesterol = st.number_input("9. Cholesterol", value=200)
+    triglycerides = st.number_input("10. Triglycerides", value=150)
+    systolic_bp = st.number_input("11. Systolic BP", value=120)
+    diastolic_bp = st.number_input("12. Diastolic BP", value=80)
 
 with col3:
-    family_history = st.selectbox("Family History", options=[0, 1], format_func=lambda x: "Yes" if x == 1 else "No")
-    waist = st.number_input("Waist (cm)", value=85)
-    activity = st.slider("Activity Level (0-2)", 0, 2, 1)
+    st.markdown("### 🏃 Lifestyle")
+    activity = st.slider("13. Activity Level", 0, 2, 1)
+    stress = st.slider("14. Stress Level", 0, 2, 1)
+    smoking = st.selectbox("15. Smoking Status", [0, 1], format_func=lambda x: "Smoker" if x==1 else "Non-Smoker")
+    diet_score = st.slider("16. Diet Quality (0-10)", 0, 10, 5)
+    sleep_hours = st.number_input("17. Sleep Hours", value=7)
 
-# إضافة خانة ضغط الدم لو كانت موجودة عندك
-blood_pressure = st.number_input("Blood Pressure", value=120)
+st.markdown("<hr>", unsafe_allow_html=True)
 
-st.markdown("---")
-
-# 4. زر التوقع والنتيجة
-col_btn, col_res = st.columns([1, 2])
-with col_btn:
-    if st.button("Predict Result", use_container_width=True):
-        # هنا هتحطي الكود بتاع الموديل بتاعك (Model Prediction)
-        # مثال: result = model.predict([[...]])
-        st.info("Result will appear here") # ده مكان النتيجة
+# زر التوقع
+if st.button("Predict Result", use_container_width=True):
+    # هنا بقى بتجمعي ال
