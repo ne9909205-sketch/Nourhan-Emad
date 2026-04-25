@@ -1,55 +1,65 @@
 import streamlit as st
+import numpy as np
 
-# إعدادات الصفحة
-st.set_page_config(page_title="Diabetes Prediction System", layout="wide")
+# 1. إعداد الصفحة وتنسيق الألوان الفاتحة (Professional Light Theme)
+st.set_page_config(page_title="Diabetes Prediction", layout="wide")
 
-# تنسيق الألوان (النمط الفاتح)
 st.markdown("""
     <style>
     .stApp { background-color: #FFFFFF; }
-    .main-title { color: #2e7d32; text-align: center; font-size: 2.5rem; font-weight: bold; margin-bottom: 5px; }
-    .sub-title { color: #546e7a; text-align: center; font-size: 1.2rem; margin-bottom: 30px; }
-    .stNumberInput, .stSelectbox, .stSlider { margin-bottom: 10px; }
-    hr { margin-top: 20px; margin-bottom: 20px; }
+    .main-title { color: #2e7d32; text-align: center; font-size: 2.8rem; font-weight: bold; margin-bottom: 0px; }
+    .eng-name { color: #546e7a; text-align: center; font-size: 1.2rem; margin-bottom: 20px; }
+    .stNumberInput label, .stSelectbox label, .stSlider label {
+        color: #2e7d32 !important; font-weight: bold !important;
+    }
+    div[data-baseweb="input"] { border-radius: 10px !important; }
+    hr { border: 0; height: 1px; background: #e0e0e0; margin: 20px 0; }
     </style>
-    <div>
-        <h1 class="main-title">Diabetes Prediction System</h1>
-        <p class="sub-title">Eng. Nourhan Emad El-Din Mohamed</p>
-    </div>
-    <hr>
     """, unsafe_allow_html=True)
 
-# تقسيم الـ 17 خانة على 3 أعمدة عشان الشكل يكون مريح والعين تشوفهم كلهم
+# العنوان
+st.markdown('<h1 class="main-title">Diabetes Prediction System</h1>', unsafe_allow_html=True)
+st.markdown('<p class="eng-name">Eng. Nourhan Emad El-Din Mohamed</p>', unsafe_allow_html=True)
+st.markdown('<hr>', unsafe_allow_html=True)
+
+# 2. إنشاء الـ 17 خانة وتوزيعهم في 3 أعمدة عشان الزحمة
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.markdown("### 🧬 Demographics")
-    age = st.number_input("1. Age", value=45)
-    gender = st.selectbox("2. Gender", [0, 1], format_func=lambda x: "Male" if x==1 else "Female")
-    bmi = st.number_input("3. BMI", value=25.0)
-    waist = st.number_input("4. Waist (cm)", value=85)
-    family_hist = st.selectbox("5. Family History", [0, 1], format_func=lambda x: "Yes" if x==1 else "No")
-    ethnicity = st.selectbox("6. Ethnicity", [0, 1, 2, 3]) # عدلي الاختيارات حسب الداتا
+    st.info("📍 General Info")
+    v1 = st.number_input("1. Age", value=40)
+    v2 = st.selectbox("2. Gender", [0, 1], format_func=lambda x: "Male" if x==1 else "Female")
+    v3 = st.selectbox("3. Polyuria", [0, 1], format_func=lambda x: "Yes" if x==1 else "No")
+    v4 = st.selectbox("4. Polydipsia", [0, 1], format_func=lambda x: "Yes" if x==1 else "No")
+    v5 = st.selectbox("5. Sudden Weight Loss", [0, 1], format_func=lambda x: "Yes" if x==1 else "No")
+    v6 = st.selectbox("6. Weakness", [0, 1], format_func=lambda x: "Yes" if x==1 else "No")
 
 with col2:
-    st.markdown("### 📊 Clinical Labs")
-    hba1c = st.number_input("7. HbA1c Level", value=5.5)
-    blood_glucose = st.number_input("8. Blood Glucose", value=100)
-    cholesterol = st.number_input("9. Cholesterol", value=200)
-    triglycerides = st.number_input("10. Triglycerides", value=150)
-    systolic_bp = st.number_input("11. Systolic BP", value=120)
-    diastolic_bp = st.number_input("12. Diastolic BP", value=80)
+    st.info("🧪 Clinical Symptoms")
+    v7 = st.selectbox("7. Polyphagia", [0, 1], format_func=lambda x: "Yes" if x==1 else "No")
+    v8 = st.selectbox("8. Genital Thrush", [0, 1], format_func=lambda x: "Yes" if x==1 else "No")
+    v9 = st.selectbox("9. Visual Blurring", [0, 1], format_func=lambda x: "Yes" if x==1 else "No")
+    v10 = st.selectbox("10. Itching", [0, 1], format_func=lambda x: "Yes" if x==1 else "No")
+    v11 = st.selectbox("11. Irritability", [0, 1], format_func=lambda x: "Yes" if x==1 else "No")
+    v12 = st.selectbox("12. Delayed Healing", [0, 1], format_func=lambda x: "Yes" if x==1 else "No")
 
 with col3:
-    st.markdown("### 🏃 Lifestyle")
-    activity = st.slider("13. Activity Level", 0, 2, 1)
-    stress = st.slider("14. Stress Level", 0, 2, 1)
-    smoking = st.selectbox("15. Smoking Status", [0, 1], format_func=lambda x: "Smoker" if x==1 else "Non-Smoker")
-    diet_score = st.slider("16. Diet Quality (0-10)", 0, 10, 5)
-    sleep_hours = st.number_input("17. Sleep Hours", value=7)
+    st.info("📉 Medical Indicators")
+    v13 = st.selectbox("13. Partial Paresis", [0, 1], format_func=lambda x: "Yes" if x==1 else "No")
+    v14 = st.selectbox("14. Muscle Stiffness", [0, 1], format_func=lambda x: "Yes" if x==1 else "No")
+    v15 = st.selectbox("15. Alopecia", [0, 1], format_func=lambda x: "Yes" if x==1 else "No")
+    v16 = st.selectbox("16. Obesity", [0, 1], format_func=lambda x: "Yes" if x==1 else "No")
+    v17 = st.number_input("17. Blood Glucose Level", value=100)
 
-st.markdown("<hr>", unsafe_allow_html=True)
+st.markdown('<hr>', unsafe_allow_html=True)
 
-# زر التوقع
-if st.button("Predict Result", use_container_width=True):
-    # هنا بقى بتجمعي ال
+# 3. زر التوقع والنتيجة
+if st.button("Predict Diagnosis", use_container_width=True):
+    # تجميع الـ 17 قيمة في مصفوفة واحدة للموديل
+    input_data = np.array([[v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17]])
+    
+    # ملاحظة: هنا لازم يكون عندك الموديل محمّل عشان يعمل predict
+    # st.write(model.predict(input_data)) 
+    
+    st.success("Analysis Complete. The system is ready to process the 17 parameters.")
+    st.balloons() # حركة احتفالية بسيطة عند الضغط
